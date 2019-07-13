@@ -1,0 +1,33 @@
+{
+  "name": "hub-scripts",
+  "version": "0.0.1",
+  "description": "Node scripts for working with ArcGIS Hub",
+  "main": "web-maps/datasets.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomwayson/hub-scripts.git"
+  },
+  "keywords": [
+    "ArcGIS",
+    "Hub",
+    "node"
+  ],
+  "author": "Tom Wayson <tom@tomwayson.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/tomwayson/hub-scripts/issues"
+  },
+  "homepage": "https://github.com/tomwayson/hub-scripts#readme",
+  "dependencies": {
+    "@esri/arcgis-rest-portal": "^2.1.0",
+    "@esri/arcgis-rest-request": "^2.1.0",
+    "isomorphic-form-data": "^2.0.0",
+    "node-fetch": "^2.3.0"
+  }
+}
