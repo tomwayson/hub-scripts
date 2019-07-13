@@ -1,13 +1,7 @@
-/* eslint-env node */
-
 const fs = require('fs');
 const fetch = require('node-fetch');
 require('isomorphic-form-data');
 const { searchItems, getItemData } = require('@esri/arcgis-rest-portal');
-
-// test data
-// const site = require('./test/data/site.json');
-// const webmap = require('./test/data/webmap.json');
 
 const outFileName = `./output/${Date.now()}.csv`;
 // TODO: log to file instead of console?
@@ -30,10 +24,10 @@ searchItems({
   fetch,
   portal
 })
-.then(response => {
-  console.log(`Processing up to ${maxPages * num} of ${response.total} items`);
-  processSearchResults(response);
-});
+  .then(response => {
+    console.log(`Processing up to ${maxPages * num} of ${response.total} items`);
+    processSearchResults(response);
+  });
 
 function processSearchResults (response) {
   pageCount = pageCount + 1;
@@ -43,41 +37,41 @@ function processSearchResults (response) {
       fetch,
       portal
     })
-    .then(site => {
-      const webmaps = parseWebmaps(site);
-      if (!webmaps) {
-        return;
-      }
-      // fetch web map data
-      webmaps.forEach((webmap, i) => {
-        if (!webmap) {
-          // empty web map id, don't bother trying to fetch it
-          console.log(`webmap-card: ${result.id} webmap-card ${i} has an empty id`);
-        } else {
-          getItemData(webmap, {
-            fetch,
-            portal
-          })
-          .then(response => {
-            // add a row to the CSV
-            csv = csv + printRow(result, webmap, response);
-          })
-          .catch(e => {
-            // log the error
-            console.log(`webmap: ${webmap} ${e.message}`);
-          });
+      .then(site => {
+        const webmaps = parseWebmaps(site);
+        if (!webmaps) {
+          return;
         }
-      });
-    })
-    .catch(e => {
+        // fetch web map data
+        webmaps.forEach((webmap, i) => {
+          if (!webmap) {
+          // empty web map id, don't bother trying to fetch it
+            console.log(`webmap-card: ${result.id} webmap-card ${i} has an empty id`);
+          } else {
+            getItemData(webmap, {
+              fetch,
+              portal
+            })
+              .then(response => {
+                // add a row to the CSV
+                csv = csv + printRow(result, webmap, response);
+              })
+              .catch(e => {
+                // log the error
+                console.log(`webmap: ${webmap} ${e.message}`);
+              });
+          }
+        });
+      })
+      .catch(e => {
       // log the error
-      console.log(`result: ${result.id} ${e.message}`);
-    });
+        console.log(`result: ${result.id} ${e.message}`);
+      });
   });
   if (response.nextPage && pageCount <= maxPages) {
     // fetch the next page of results
     response.nextPage()
-    .then(processSearchResults);
+      .then(processSearchResults);
   } else {
     // output
     fs.writeFileSync(outFileName, csv);

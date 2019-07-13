@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 const fs = require('fs');
 const fetch = require('node-fetch');
 require('isomorphic-form-data');
@@ -10,7 +8,7 @@ const outFileName = `./web-maps/output/${Date.now()}.csv`;
 // const logFileName = `./web-maps/output/${Date.now()}.log`;
 // TODO: read at least env and num (maxPages?) from environment vars
 // const portal = 'https://qaext.arcgis.com/sharing/rest';
-const env = 'prod'; // or 'qa' or 'dev';
+const env = 'qa'; // or 'qa' or 'dev';
 const num = 99; // API max
 const maxPages = Math.floor(9999 / num); // API max
 const apiUrl = `https://${getApiDomain(env)}.arcgis.com/api/v3/datasets?filter[type]=any(Web%20Map)&filter[openData]=true&fields[datasets]=itemModified,name,owner&page[size]=${num}&page[number]=1`;
@@ -23,7 +21,7 @@ processPage(apiUrl);
 
 // fetch and process a page of results
 async function processPage (url) {
-  let response = await fetch(url);
+  const response = await fetch(url);
   if (!response.ok) {
     console.log(`error fetching ${url}`);
     // output partial CSV to a file
@@ -31,7 +29,7 @@ async function processPage (url) {
     return;
   }
   pageCount = pageCount + 1;
-  let json = await response.json();
+  const json = await response.json();
   if (pageCount === 1) {
     // first page, log the total
     const meta = json && json.meta;
@@ -46,7 +44,7 @@ async function processPage (url) {
   // NOTE: I tried `for (const d of data)` to make the item data requests sequentially
   // but it was going to take ~2hrs and crashed when my mac went to sleep
   // instead we make simultaneous requests in a batch for each page of results w/ Promise.all()
-  const requests = data && data.map(async (d) => await fetchVersion(d));
+  const requests = data && data.map(async (d) => fetchVersion(d));
   const responses = await Promise.all(requests);
   responses && responses.forEach(r => {
     const id = r.id;
